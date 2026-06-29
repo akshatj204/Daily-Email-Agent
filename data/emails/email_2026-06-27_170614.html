@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Morning Email - Saturday</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+        
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 20px;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .section:last-child {
+            border-bottom: none;
+        }
+        
+        .section-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #667eea;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-title .emoji {
+            font-size: 24px;
+        }
+        
+        .metric {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .metric-item {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 6px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .metric-name {
+            font-size: 12px;
+            color: #888;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+        
+        .metric-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .metric-change {
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        
+        .positive {
+            color: #27ae60;
+        }
+        
+        .negative {
+            color: #e74c3c;
+        }
+        
+        .event {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .event-header {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .event-details {
+            font-size: 13px;
+            color: #666;
+        }
+        
+        .impact-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        
+        .impact-critical {
+            background-color: #ffe5e5;
+            color: #c41e3a;
+        }
+        
+        .impact-high {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .impact-medium {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .article {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .article-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .article-source {
+            font-size: 12px;
+            color: #888;
+        }
+        
+        .task-box {
+            background: #f0f7ff;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #667eea;
+            margin-bottom: 15px;
+        }
+        
+        .task-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .task-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .task-description {
+            color: #555;
+            font-size: 14px;
+        }
+        
+        .code-box {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 12px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        
+        .footer {
+            background-color: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #888;
+            border-top: 1px solid #eee;
+        }
+        
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #667eea;
+            color: white;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        
+        .button:hover {
+            background-color: #764ba2;
+        }
+        
+        .alert {
+            background-color: #fffbea;
+            border-left: 4px solid #ffc107;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-size: 13px;
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📧 Morning Update</h1>
+            <p>Saturday, June 27, 2026</p>
+        </div>
+        <div class="content">
+
+            <div class="section">
+                <div class="section-title">
+                    <span class="emoji">📊</span>
+                    <span>Market Data</span>
+                </div>
+                <p style="color: #666; font-size: 13px; margin-bottom: 15px;">Region: <strong>Commodities</strong></p>
+                <div class="metric">
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">
+                    <span class="emoji">📅</span>
+                    <span>Economic Calendar</span>
+                </div>
+                <div class="event">
+                    <div class="event-header">
+                        <span class="impact-badge impact-none">NONE</span>
+                        India - Weekend Markets Closed
+                    </div>
+                    <div class="event-details">
+                        <strong>Time:</strong> - IST<br>
+                        <strong>Watch for:</strong> No trading; review week's market moves
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">
+                    <span class="emoji">💪</span>
+                    <span>Fitness Insight</span>
+                </div>
+                <div class="task-box" style="background: #ffe5f0;">
+                    <div class="task-title">Progressive Overload: Building Muscle</div>
+                    <div class="task-meta">
+                        <span><strong>Topic:</strong> Strength Training</span>
+                        <span><strong>Duration:</strong> 12 weeks</span>
+                    </div>
+                    <div class="task-description">
+                        <strong>Focus:</strong> Systematic strength increase<br><br>
+                        <strong>Key Points:</strong>
+                        <br>• Progressive weights                        <br>• Volume management                        <br>• Recovery time
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">
+                    <span class="emoji">📚</span>
+                    <span>Today's Learning Task</span>
+                </div>
+                <div class="task-box">
+                    <div class="task-title">Streamlit Dashboard</div>
+                    <div class="task-meta">
+                        <span><strong>Difficulty:</strong> Intermediate</span>
+                        <span><strong>Time:</strong> 45 min</span>
+                    </div>
+                    <div class="task-description">
+                        Build 1 simple Streamlit dashboard with portfolio metrics<br><br>
+                        <strong>Resources:</strong> Streamlit docs, Your previous code
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">
+                    <span class="emoji">🐍</span>
+                    <span>Python Function of the Day</span>
+                </div>
+                <div class="task-box" style="background: #f0f5ff;">
+                    <div class="task-title"><code>sklearn.decomposition.PCA</code></div>
+                    <div class="task-meta">
+                        <span><strong>Difficulty:</strong> Advanced</span>
+                    </div>
+                    <div class="task-description">
+                        <strong>What it does:</strong> Principal Component Analysis<br><br>
+                        <strong>Use case:</strong> Reduce dimensionality in large portfolios<br><br>
+                        <strong>Example:</strong>
+                        <div class="code-box">pca = PCA(n_components=3).fit(returns)</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">
+                    <span class="emoji">📰</span>
+                    <span>Curated Articles</span>
+                </div>
+                <div class="article">
+                    <div class="article-title"><a href="https://github.com/deepseek-ai/DeepSpec/blob/main/DSpark_paper.pdf" style="color: #667eea; text-decoration: none;">DeepSeek open-sources inference optimizations with 60–85% faster generation [pdf]</a></div>
+                    <div class="article-source">Hacker News • 313 upvotes</div>
+                </div>
+                <div class="article">
+                    <div class="article-title"><a href="https://w.pitula.me/fintech-engineering-handbook/" style="color: #667eea; text-decoration: none;">Fintech Engineering Handbook</a></div>
+                    <div class="article-source">Hacker News • 53 upvotes</div>
+                </div>
+                <div class="article">
+                    <div class="article-title"><a href="https://openai.com/index/previewing-gpt-5-6-sol/" style="color: #667eea; text-decoration: none;">Previewing GPT‑5.6 Sol: a next-generation model</a></div>
+                    <div class="article-source">Hacker News • 1026 upvotes</div>
+                </div>
+                <div class="article">
+                    <div class="article-title"><a href="https://dev.to/entire/never-forget-to-enter-the-stern-grove-lottery-again-31i5" style="color: #667eea; text-decoration: none;">Never forget to enter the Stern Grove lottery again!</a></div>
+                    <div class="article-source">Dev.to • 6min read</div>
+                </div>
+                <div class="article">
+                    <div class="article-title"><a href="https://dev.to/copyleftdev/ai-didnt-invent-slop-it-only-made-it-infinite-21o4" style="color: #667eea; text-decoration: none;">AI Didn't Invent Slop. It Only Made It Infinite.</a></div>
+                    <div class="article-source">Dev.to • 10min read</div>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <p>
+                Morning Email Agent | Next update: Tomorrow at 6:00 AM IST
+            </p>
+            <p style="margin-top: 10px; color: #aaa;">
+                <a href="#">View in Browser</a> • 
+                <a href="#">Unsubscribe</a> • 
+                <a href="#">Settings</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

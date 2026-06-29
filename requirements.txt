@@ -1,0 +1,13 @@
+# Morning Email Agent - Fixed Requirements
+# Simplified for better compatibility
+
+yfinance>=0.2.0
+requests>=2.25.0
+python-dateutil>=2.8.0
+beautifulsoup4>=4.9.0
+feedparser>=6.0.0
+
+# Optional: Only needed for Gmail sending (uncomment when ready)
+# google-auth-oauthlib>=1.0.0
+# google-auth-httplib2>=0.1.0
+# google-api-python-client>=2.0.0

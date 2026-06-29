@@ -1,0 +1,12 @@
+{
+  "substack_feeds": [
+    {
+      "name": "Paul Krugman",
+      "url": "https://paulkrugman.substack.com/feed"
+    },
+    {
+      "name": "Robert Reich",
+      "url": "https://robertreich.substack.com/feed"
+    }
+  ]
+}

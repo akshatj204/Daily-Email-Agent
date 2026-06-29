@@ -1,0 +1,73 @@
+name: Morning Email Agent
+
+# Trigger: Every day at 6 AM IST
+# Note: GitHub Actions uses UTC, so 6 AM IST = 12:30 AM UTC
+on:
+  schedule:
+    # 0:30 UTC = 6 AM IST (India Standard Time is UTC+5:30)
+    - cron: '30 0 * * *'
+  
+  # Also allow manual trigger from GitHub UI
+  workflow_dispatch
+
+jobs:
+  send-morning-email:
+    runs-on: ubuntu-latest
+    
+    steps:
+      # Step 1: Check out the code
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      # Step 2: Set up Python
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      # Step 3: Install dependencies
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      
+      # Step 4: Run the morning email agent
+      - name: Run Morning Email Agent
+        run: python main.py
+        env:
+          # Add environment variables here if needed
+          PYTHONUNBUFFERED: 1
+      
+      # Step 5: Upload logs as artifact (for debugging)
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: morning-email-logs
+          path: data/logs/
+          retention-days: 7
+      
+      # Step 6: Upload generated emails as artifact
+      - name: Upload generated emails
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: morning-emails
+          path: data/emails/
+          retention-days: 30
+
+# Alternative: If you want to SEND emails via GitHub Actions
+# You'll need to store Gmail credentials as secrets
+# See instructions below
+
+# To add Gmail credentials as GitHub secrets:
+# 1. Go to your repo Settings → Secrets and variables → Actions
+# 2. Create new secret: GMAIL_CREDENTIALS_JSON
+# 3. Paste your credentials.json content
+# 4. Uncomment the section below
+#
+# Then in main.py, you can read from environment:
+# import os
+# credentials_json = os.getenv('GMAIL_CREDENTIALS_JSON')
+# with open('credentials.json', 'w') as f:
+#     f.write(credentials_json)
