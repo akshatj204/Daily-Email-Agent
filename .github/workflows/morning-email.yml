@@ -45,7 +45,7 @@ jobs:
       # Step 5: Upload logs as artifact (for debugging)
       - name: Upload logs
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: morning-email-logs
           path: data/logs/
@@ -54,7 +54,7 @@ jobs:
       # Step 6: Upload generated emails as artifact
       - name: Upload generated emails
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: morning-emails
           path: data/emails/
