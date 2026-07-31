@@ -6,7 +6,7 @@ Sends emails via Gmail API with OAuth authentication.
 import os
 import base64
 import logging
-from typing import Optional, List
+from typing import Optional, List, Sequence, Union
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import datetime
@@ -18,11 +18,18 @@ try:
     from google.oauth2.credentials import Credentials
     from google_auth_oauthlib.flow import InstalledAppFlow
     from googleapiclient import discovery
+
     GMAIL_AVAILABLE = True
-except ImportError:
+    print("✅ Gmail libraries imported successfully")
+
+except ImportError as e:
+    import traceback
+
+    print("\n❌ IMPORT ERROR")
+    print(e)
+    traceback.print_exc()
+
     GMAIL_AVAILABLE = False
-    logger.warning("Gmail API libraries not installed. Install with: pip install google-auth-oauthlib google-auth-httplib2 google-api-python-client")
-    print(f"GMAIL_AVAILABLE = {GMAIL_AVAILABLE}")
 
 
 class GmailSender:
@@ -43,13 +50,24 @@ class GmailSender:
         self.token_file = token_file
         self.service = None
         self.user_email = None
-        
+
+        print("GMAIL_AVAILABLE =", GMAIL_AVAILABLE)
         if GMAIL_AVAILABLE:
             try:
+                print("Initializing Gmail service...")
                 self._initialize_service()
+                print("Gmail service initialized successfully!")
+
             except Exception as e:
                 import traceback
+
+                print("\n================ ERROR ================")
+                print("Exception Type:", type(e).__name__)
+                print("Exception:", str(e))
+                print("=======================================\n")
+
                 traceback.print_exc()
+
                 logger.exception("Gmail service not initialized")
     
     def _initialize_service(self):
@@ -74,31 +92,39 @@ class GmailSender:
                         "3. Run this script again"
                     )
                 
+                print("Step 1: Loading credentials...")
                 flow = InstalledAppFlow.from_client_secrets_file(
                     self.credentials_file, self.SCOPES
                 )
+
+                print("Step 2: Starting OAuth flow...")
                 creds = flow.run_local_server(port=0)
+
+                print("Step 3: OAuth completed")
             
             # Save token for next run
             with open(self.token_file, 'w') as f:
                 f.write(creds.to_json())
         
         # Build service
+        print("Step 4")
         self.service = discovery.build('gmail', 'v1', credentials=creds)
         
         # Get user email
+        print("Step 5")
         profile = self.service.users().getProfile(userId='me').execute()
         self.user_email = profile.get('emailAddress')
         
         logger.info(f"Gmail service initialized for: {self.user_email}")
+        print("Step 6: Done!")
     
     def send_email(
         self,
-        to: str,
+        to: Union[str, Sequence[str]],
         subject: str,
         html_body: str,
-        cc: Optional[List[str]] = None,
-        bcc: Optional[List[str]] = None,
+        cc: Optional[Union[str, Sequence[str]]] = None,
+        bcc: Optional[Union[str, Sequence[str]]] = None,
         reply_to: Optional[str] = None
     ) -> bool:
         """
@@ -120,14 +146,22 @@ class GmailSender:
             return False
         
         try:
+            recipients = [to] if isinstance(to, str) else list(to or [])
+            cc_recipients = [cc] if isinstance(cc, str) else list(cc or [])
+            bcc_recipients = [bcc] if isinstance(bcc, str) else list(bcc or [])
+
+            if not recipients:
+                logger.error("No recipients provided")
+                return False
+
             # Create message
             message = MIMEMultipart('alternative')
             message['subject'] = subject
             message['from'] = self.user_email
-            message['to'] = to
+            message['to'] = ', '.join(recipients)
             
-            if cc:
-                message['cc'] = ', '.join(cc)
+            if cc_recipients:
+                message['cc'] = ', '.join(cc_recipients)
             
             if reply_to:
                 message['reply-to'] = reply_to
@@ -143,8 +177,8 @@ class GmailSender:
                 'threadId': None
             }
             
-            if bcc:
-                send_message['bcc'] = ', '.join(bcc)
+            if bcc_recipients:
+                send_message['bcc'] = ', '.join(bcc_recipients)
             
             # Send message
             result = self.service.users().messages().send(
@@ -153,7 +187,7 @@ class GmailSender:
             ).execute()
             
             message_id = result.get('id')
-            logger.info(f"Email sent successfully to {to} (Message ID: {message_id})")
+            logger.info(f"Email sent successfully to {recipients} (Message ID: {message_id})")
             
             return True
         
@@ -163,9 +197,9 @@ class GmailSender:
     
     def send_morning_email(
         self,
-        to: str,
+        to: Union[str, Sequence[str]],
         html_body: str,
-        cc: Optional[List[str]] = None,
+        cc: Optional[Union[str, Sequence[str]]] = None,
         day_of_week: Optional[str] = None
     ) -> bool:
         """
@@ -283,7 +317,7 @@ if __name__ == "__main__":
     """
     
     success = sender.send_morning_email(
-        to="your-email@gmail.com",
+        to="akshat.jain204@gmail.com",
         html_body=sample_html,
         day_of_week="Monday"
     )

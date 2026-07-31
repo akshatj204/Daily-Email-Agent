@@ -4,12 +4,12 @@
 <dict>
     <key>Label</key>
     <string>com.morningemailagent</string>
-    
+
     <key>ProgramArguments</key>
     <array>
-        <string>/Users/akshatjain/Documents/claude/morning-email-agent/run_morning_email.sh</string>
+        <string>/Users/akshatjain/Documents/Daily-Email-Agent/run_morning_email.sh</string>
     </array>
-    
+
     <key>StartCalendarInterval</key>
     <dict>
         <key>Hour</key>
@@ -17,14 +17,14 @@
         <key>Minute</key>
         <integer>0</integer>
     </dict>
-    
+
     <key>StandardOutPath</key>
-    <string>/Users/akshatjain/Documents/claude/morning-email-agent/logs/scheduler.log</string>
-    
+    <string>/Users/akshatjain/Documents/Daily-Email-Agent/logs/scheduler.log</string>
+
     <key>StandardErrorPath</key>
-    <string>/Users/akshatjain/Documents/claude/morning-email-agent/logs/scheduler_error.log</string>
-    
+    <string>/Users/akshatjain/Documents/Daily-Email-Agent/logs/scheduler_error.log</string>
+
     <key>WorkingDirectory</key>
-    <string>/Users/akshatjain/Documents/claude/morning-email-agent</string>
+    <string>/Users/akshatjain/Documents/Daily-Email-Agent</string>
 </dict>
 </plist>

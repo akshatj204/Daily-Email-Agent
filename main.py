@@ -3,6 +3,7 @@ Morning Email Agent - Main Orchestrator
 Coordinates all fetchers, builds email, and prepares for sending.
 """
 
+import os
 import sys
 import logging
 from datetime import datetime
@@ -316,8 +317,9 @@ if __name__ == "__main__":
         # Send email via Gmail
         from utils.gmail_sender import GmailSender
         sender = GmailSender()
+        recipient_email = os.getenv("RECIPIENT_EMAIL") or os.getenv("GMAIL_USER") or "akshat.jain204@gmail.com"
         sender.send_morning_email(
-            to='akshat.jain204@gmail.com',
+            to=recipient_email,
             html_body=result['html'],
             day_of_week=agent.day_of_week
         )

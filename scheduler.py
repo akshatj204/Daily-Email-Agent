@@ -4,9 +4,11 @@ Runs the morning email agent on a schedule (6 AM daily).
 This replaces the need for cron jobs - everything is in code!
 """
 
+import os
 import schedule
 import time
 import logging
+from typing import Optional
 from datetime import datetime
 from main import MorningEmailAgent
 from utils.gmail_sender import get_gmail_sender
@@ -23,26 +25,28 @@ logging.basicConfig(
 class EmailScheduler:
     """Schedule the morning email to run daily at a specific time"""
     
-    def __init__(self, send_email: bool = True, use_mock_gmail: bool = False):
+    def __init__(self, send_email: bool = True, use_mock_gmail: bool = False, recipient_email: Optional[str] = None):
         """
         Initialize scheduler.
         
         Args:
             send_email: Whether to actually send emails (True) or just generate (False)
             use_mock_gmail: Use mock Gmail for testing (True) or real Gmail (False)
+            recipient_email: Optional override for the destination email address
         """
         self.send_email = send_email
         self.use_mock_gmail = use_mock_gmail
-        self.recipient_email = "your-email@gmail.com"  # CHANGE THIS!
+        self.recipient_email = recipient_email or os.getenv("RECIPIENT_EMAIL") or os.getenv("GMAIL_USER")
         
         logger.info(f"Scheduler initialized")
         logger.info(f"  Send Email: {self.send_email}")
         logger.info(f"  Mock Gmail: {self.use_mock_gmail}")
+        logger.info(f"  Recipient: {self.recipient_email or 'not configured'}")
     
-    def set_recipient_email(self, email: str) -> None:
+    def set_recipient_email(self, email: Optional[str]) -> None:
         """Set the email address to send to"""
-        self.recipient_email = email
-        logger.info(f"Recipient email set to: {email}")
+        self.recipient_email = email or None
+        logger.info(f"Recipient email set to: {self.recipient_email or 'not configured'}")
     
     def morning_email_job(self) -> None:
         """Job to run every morning at 6 AM"""
@@ -62,17 +66,22 @@ class EmailScheduler:
                 
                 try:
                     sender = get_gmail_sender(use_mock=self.use_mock_gmail)
+                    recipient = self.recipient_email or getattr(sender, "user_email", None) or os.getenv("GMAIL_USER")
                     
-                    success = sender.send_morning_email(
-                        to=self.recipient_email,
-                        html_body=result.get("html", "<p>No email generated</p>"),
-                        day_of_week=agent.day_of_week
-                    )
+                    if not recipient:
+                        logger.warning("No recipient email configured; skipping send.")
+                        success = False
+                    else:
+                        success = sender.send_morning_email(
+                            to=recipient,
+                            html_body=result.get("html", "<p>No email generated</p>"),
+                            day_of_week=agent.day_of_week
+                        )
                     
                     if success:
-                        logger.info(f"✅ Email sent to {self.recipient_email}")
+                        logger.info(f"✅ Email sent to {recipient}")
                     else:
-                        logger.error(f"❌ Failed to send email to {self.recipient_email}")
+                        logger.error(f"❌ Failed to send email to {recipient or 'unknown recipient'}")
                 
                 except Exception as e:
                     logger.error(f"Error sending email: {str(e)}")
@@ -145,7 +154,7 @@ def run_scheduler_in_background():
     import threading
     
     scheduler = EmailScheduler(send_email=True, use_mock_gmail=False)
-    scheduler.set_recipient_email("your-email@gmail.com")  # CHANGE THIS!
+    scheduler.set_recipient_email(os.getenv("RECIPIENT_EMAIL") or os.getenv("GMAIL_USER"))
     scheduler.schedule_daily_at(hour=6, minute=0)
     
     # Start scheduler in background thread
@@ -169,7 +178,7 @@ if __name__ == "__main__":
     )
     
     # Set your email (IMPORTANT!)
-    scheduler.set_recipient_email("your-email@gmail.com")  # CHANGE THIS!
+    scheduler.set_recipient_email(os.getenv("RECIPIENT_EMAIL") or os.getenv("GMAIL_USER"))
     
     # Schedule for 6 AM daily
     scheduler.schedule_daily_at(hour=6, minute=0)
